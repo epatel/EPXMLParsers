@@ -30,15 +30,17 @@
 	NSMutableString *activeText;
 	NSMutableArray *list;
 	NSMutableArray *fieldNames;
+    NSMutableArray *attributeNames; 
 }
 
-+ (ListParser*)parser;
++ (ListParser *)parser;
 - (id)init;
-- (void)parseData:(NSData*)data;
-- (void)parseString:(NSString*)string;
+- (void)parseData:(NSData *)data;
+- (void)parseString:(NSString *)string;
 - (NSArray*)list;
 - (int)numEntries;
 
-- (void)addFieldName:(NSString*)name;
+- (void)addFieldName:(NSString *)name;
+- (void)addAttributeName:(NSString *)name; 
 
 @end

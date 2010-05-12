@@ -28,7 +28,7 @@
 
 @implementation ListParser
 
-+ (ListParser*)parser
++ (ListParser *)parser
 {
 	return [[[ListParser alloc] init] autorelease];
 }
@@ -38,6 +38,7 @@
 	if (self = [super init]) {
 		list = [[NSMutableArray alloc] init];
 		fieldNames = [[NSMutableArray alloc] init];
+        attributeNames = [[NSMutableArray alloc] init]; 
 	}
 	return self;
 }
@@ -48,10 +49,11 @@
 		[activeText release];
 	[list release];
 	[fieldNames release];
+    [attributeNames release];
 	[super dealloc];
 }
 
-- (NSArray*)list
+- (NSArray *)list
 {
 	return [NSArray arrayWithArray:list];
 }
@@ -61,7 +63,7 @@
 	return list.count;
 }
 
-- (void)parseData:(NSData*)data
+- (void)parseData:(NSData *)data
 {
     NSXMLParser *parser = [[NSXMLParser alloc] initWithData:data];
     [parser setDelegate:self];
@@ -69,7 +71,7 @@
     [parser release];
 }
 
-- (void)parseString:(NSString*)string
+- (void)parseString:(NSString *)string
 {
     NSXMLParser *parser = [[NSXMLParser alloc] initWithData:[string dataUsingEncoding:NSUTF8StringEncoding]];
     [parser setDelegate:self];
@@ -89,6 +91,12 @@ didStartElement:(NSString *)elementName
     if ([fieldNames containsObject:elementName]) {
 		activeText = [[NSMutableString alloc] init];
     }
+    unsigned count = [attributeNames count]; 
+    while (count--) { 
+        if ([attributeDict objectForKey:[attributeNames objectAtIndex:count]]) { 
+            [list addObject:[attributeDict valueForKey:[attributeNames objectAtIndex:count]]]; 
+        } 
+    } 
 }
 
 - (void)parser:(NSXMLParser *)parser
@@ -112,9 +120,14 @@ foundCharacters:(NSString *)string
 		[activeText appendString:string];
 }
 
-- (void)addFieldName:(NSString*)name
+- (void)addFieldName:(NSString *)name
 {
 	[fieldNames addObject:[NSString stringWithString:name]];
 }
+
+- (void)addAttributeName:(NSString *)name 
+{ 
+    [attributeNames addObject:[NSString stringWithString:name]]; 
+} 
 
 @end
