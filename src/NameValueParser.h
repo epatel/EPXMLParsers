@@ -26,7 +26,7 @@
 #import <Foundation/Foundation.h>
 
 
-@interface NameValueParser : NSObject {
+@interface NameValueParser : NSObject<NSXMLParserDelegate> {
 	NSMutableString *activeText;
 	NSMutableDictionary *activeEntry;
 	NSMutableArray *list;

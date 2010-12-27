@@ -66,6 +66,7 @@
 - (void)parseData:(NSData *)data
 {
     NSXMLParser *parser = [[NSXMLParser alloc] initWithData:data];
+	[parser setShouldProcessNamespaces:YES];
     [parser setDelegate:self];
     [parser parse];
     [parser release];
@@ -74,6 +75,7 @@
 - (void)parseString:(NSString *)string
 {
     NSXMLParser *parser = [[NSXMLParser alloc] initWithData:[string dataUsingEncoding:NSUTF8StringEncoding]];
+	[parser setShouldProcessNamespaces:YES];
     [parser setDelegate:self];
     [parser parse];
     [parser release];
