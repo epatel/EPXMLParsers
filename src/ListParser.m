@@ -30,43 +30,43 @@
 
 + (ListParser *)parser
 {
-	return [[[ListParser alloc] init] autorelease];
+    return [[[ListParser alloc] init] autorelease];
 }
 
 - (id)init
 {
-	if (self = [super init]) {
-		list = [[NSMutableArray alloc] init];
-		fieldNames = [[NSMutableArray alloc] init];
+    if (self = [super init]) {
+        list = [[NSMutableArray alloc] init];
+        fieldNames = [[NSMutableArray alloc] init];
         attributeNames = [[NSMutableArray alloc] init]; 
-	}
-	return self;
+    }
+    return self;
 }
 
 - (void)dealloc
 {
-	if (activeText)
-		[activeText release];
-	[list release];
-	[fieldNames release];
+    if (activeText)
+        [activeText release];
+    [list release];
+    [fieldNames release];
     [attributeNames release];
-	[super dealloc];
+    [super dealloc];
 }
 
 - (NSArray *)list
 {
-	return [NSArray arrayWithArray:list];
+    return [NSArray arrayWithArray:list];
 }
 
 - (int)numEntries
 {
-	return list.count;
+    return list.count;
 }
 
 - (void)parseData:(NSData *)data
 {
     NSXMLParser *parser = [[NSXMLParser alloc] initWithData:data];
-	[parser setShouldProcessNamespaces:YES];
+    [parser setShouldProcessNamespaces:YES];
     [parser setDelegate:self];
     [parser parse];
     [parser release];
@@ -75,7 +75,7 @@
 - (void)parseString:(NSString *)string
 {
     NSXMLParser *parser = [[NSXMLParser alloc] initWithData:[string dataUsingEncoding:NSUTF8StringEncoding]];
-	[parser setShouldProcessNamespaces:YES];
+    [parser setShouldProcessNamespaces:YES];
     [parser setDelegate:self];
     [parser parse];
     [parser release];
@@ -85,13 +85,13 @@
 didStartElement:(NSString *)elementName
    namespaceURI:(NSString *)namespaceURI
   qualifiedName:(NSString *)qName
-	 attributes:(NSDictionary *)attributeDict
+     attributes:(NSDictionary *)attributeDict
 {
-	if (activeText)
-		[activeText release];
-	activeText = nil;
+    if (activeText)
+        [activeText release];
+    activeText = nil;
     if ([fieldNames containsObject:elementName]) {
-		activeText = [[NSMutableString alloc] init];
+        activeText = [[NSMutableString alloc] init];
     }
     unsigned count = [attributeNames count]; 
     while (count--) { 
@@ -107,24 +107,24 @@ didStartElement:(NSString *)elementName
  qualifiedName:(NSString *)qName
 {
     if ([fieldNames containsObject:elementName]) {
-		if (activeText) {
-			[list addObject:activeText];
-			[activeText release];
-			activeText = nil;
-		}
+        if (activeText) {
+            [list addObject:activeText];
+            [activeText release];
+            activeText = nil;
+        }
     }
 }
 
 - (void)parser:(NSXMLParser *)parser
 foundCharacters:(NSString *)string
 {
-	if (activeText)
-		[activeText appendString:string];
+    if (activeText)
+        [activeText appendString:string];
 }
 
 - (void)addFieldName:(NSString *)name
 {
-	[fieldNames addObject:[NSString stringWithString:name]];
+    [fieldNames addObject:[NSString stringWithString:name]];
 }
 
 - (void)addAttributeName:(NSString *)name 

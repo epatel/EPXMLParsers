@@ -27,9 +27,9 @@
 
 
 @interface ListParser : NSObject<NSXMLParserDelegate> {
-	NSMutableString *activeText;
-	NSMutableArray *list;
-	NSMutableArray *fieldNames;
+    NSMutableString *activeText;
+    NSMutableArray *list;
+    NSMutableArray *fieldNames;
     NSMutableArray *attributeNames; 
 }
 

@@ -30,45 +30,45 @@
 
 + (NameValueParser*)parser
 {
-	return [[[NameValueParser alloc] init] autorelease];
+    return [[[NameValueParser alloc] init] autorelease];
 }
 
 - (id)init
 {
-	if (self = [super init]) {
-		list = [[NSMutableArray alloc] init];
-		fieldNames = [[NSMutableArray alloc] init];
-		entryName = [[NSString stringWithString:@"member"] retain];
-	}
-	return self;
+    if (self = [super init]) {
+        list = [[NSMutableArray alloc] init];
+        fieldNames = [[NSMutableArray alloc] init];
+        entryName = [[NSString stringWithString:@"member"] retain];
+    }
+    return self;
 }
 
 - (void)dealloc
 {
-	if (activeText)
-		[activeText release];
-	if (activeEntry)
-		[activeEntry release];
-	[entryName release];
-	[fieldNames release];
-	[list release];
-	[super dealloc];
+    if (activeText)
+        [activeText release];
+    if (activeEntry)
+        [activeEntry release];
+    [entryName release];
+    [fieldNames release];
+    [list release];
+    [super dealloc];
 }
 
 - (NSArray*)list
 {
-	return [NSArray arrayWithArray:list];
+    return [NSArray arrayWithArray:list];
 }
 
 - (int)numEntries
 {
-	return list.count;
+    return list.count;
 }
 
 - (void)parseData:(NSData*)data
 {
     NSXMLParser *parser = [[NSXMLParser alloc] initWithData:data];
-	[parser setShouldProcessNamespaces:YES];
+    [parser setShouldProcessNamespaces:YES];
     [parser setDelegate:self];
     [parser parse];
     [parser release];
@@ -77,7 +77,7 @@
 - (void)parseString:(NSString*)string
 {
     NSXMLParser *parser = [[NSXMLParser alloc] initWithData:[string dataUsingEncoding:NSUTF8StringEncoding]];
-	[parser setShouldProcessNamespaces:YES];
+    [parser setShouldProcessNamespaces:YES];
     [parser setDelegate:self];
     [parser parse];
     [parser release];
@@ -88,19 +88,19 @@
 didStartElement:(NSString *)elementName
    namespaceURI:(NSString *)namespaceURI
   qualifiedName:(NSString *)qName
-	 attributes:(NSDictionary *)attributeDict
+     attributes:(NSDictionary *)attributeDict
 {
-	if (activeText)
-		[activeText release];
-	activeText = nil;
+    if (activeText)
+        [activeText release];
+    activeText = nil;
     if ([elementName isEqual:entryName]) {
-		if (activeEntry)
-			[activeEntry release];
-		activeEntry = [[NSMutableDictionary alloc] init];
+        if (activeEntry)
+            [activeEntry release];
+        activeEntry = [[NSMutableDictionary alloc] init];
         return;
     }
     if ([fieldNames containsObject:elementName]) {
-		activeText = [[NSMutableString alloc] init];
+        activeText = [[NSMutableString alloc] init];
     }
 }
 
@@ -110,42 +110,42 @@ didStartElement:(NSString *)elementName
  qualifiedName:(NSString *)qName
 {
     if ([elementName isEqual:entryName]) {
-		if (activeEntry) {
-			[list addObject:activeEntry];
-			[activeEntry release];
-			activeEntry = nil;
-		}
+        if (activeEntry) {
+            [list addObject:activeEntry];
+            [activeEntry release];
+            activeEntry = nil;
+        }
         return;
     }
     if ([fieldNames containsObject:elementName]) {
-		if (activeText) {
-			if (activeEntry) 
-				[activeEntry setObject:activeText
-								forKey:elementName];
-			[activeText release];
-			activeText = nil;
-		}
+        if (activeText) {
+            if (activeEntry) 
+                [activeEntry setObject:activeText
+                                forKey:elementName];
+            [activeText release];
+            activeText = nil;
+        }
     }
 }
 
 - (void)parser:(NSXMLParser *)parser
 foundCharacters:(NSString *)string
 {
-	if (activeText)
-		[activeText appendString:string];
+    if (activeText)
+        [activeText appendString:string];
 }
 
 - (void)setEntryName:(NSString*)name
 {
-	[name retain];
-	[entryName release];
-	entryName = [name copy];
-	[name release];
+    [name retain];
+    [entryName release];
+    entryName = [name copy];
+    [name release];
 }
 
 - (void)addFieldName:(NSString*)name
 {
-	[fieldNames addObject:[NSString stringWithString:name]];
+    [fieldNames addObject:[NSString stringWithString:name]];
 }
 
 @end

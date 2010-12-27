@@ -27,11 +27,11 @@
 
 
 @interface NameValueParser : NSObject<NSXMLParserDelegate> {
-	NSMutableString *activeText;
-	NSMutableDictionary *activeEntry;
-	NSMutableArray *list;
-	NSString *entryName;
-	NSMutableArray *fieldNames;
+    NSMutableString *activeText;
+    NSMutableDictionary *activeEntry;
+    NSMutableArray *list;
+    NSString *entryName;
+    NSMutableArray *fieldNames;
 }
 
 + (NameValueParser*)parser;
