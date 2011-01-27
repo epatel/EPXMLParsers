@@ -146,7 +146,7 @@ int main (int argc, const char * argv[]) {
   
     if ((argc < 3 && argc > 4) || 
         (argc == 4 && strcmp("--color", argv[1]))) {
-        printf("Usage: %s [--color] <printer-hostname> <filename>\n", argv[1]);
+        printf("Usage: %s [--color] <printer-hostname> <filename>\n", argv[0]);
         return 1;
     }
     
