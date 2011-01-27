@@ -28,29 +28,29 @@
 
 // ===========================================================================
 
-const NSString *post_xml = @"<scan:ScanJob xmlns:scan=\"http://www.hp.com/schemas/imaging/con/cnx/scan/2008/08/19\"" 
-"xmlns:dd=\"http://www.hp.com/schemas/imaging/con/dictionaries/1.0/\">"
-"<scan:XResolution>200</scan:XResolution>"
-"<scan:YResolution>200</scan:YResolution>"
-"<scan:XStart>0</scan:XStart>"
-"<scan:YStart>0</scan:YStart>"
-"<scan:Width>2480</scan:Width>"
-"<scan:Height>3508</scan:Height>"
-"<scan:Format>Pdf</scan:Format>"
-"<scan:CompressionQFactor>15</scan:CompressionQFactor>"
-"<scan:ColorSpace>Gray</scan:ColorSpace>"
-"<scan:BitDepth>8</scan:BitDepth>"
-"<scan:InputSource>Platen</scan:InputSource>"
-"<scan:GrayRendering>NTSC</scan:GrayRendering>"
-"<scan:ToneMap>"
-"<scan:Gamma>0</scan:Gamma>"
-"<scan:Brightness>1000</scan:Brightness>"
-"<scan:Contrast>1000</scan:Contrast>"
-"<scan:Highlite>0</scan:Highlite>"
-"<scan:Shadow>0</scan:Shadow>"
-"</scan:ToneMap>"
-"<scan:ContentType>Document</scan:ContentType>"
-"</scan:ScanJob>";
+NSString *post_xml = @"<scan:ScanJob xmlns:scan=\"http://www.hp.com/schemas/imaging/con/cnx/scan/2008/08/19\"" 
+  "xmlns:dd=\"http://www.hp.com/schemas/imaging/con/dictionaries/1.0/\">"
+  "<scan:XResolution>200</scan:XResolution>"
+  "<scan:YResolution>200</scan:YResolution>"
+  "<scan:XStart>0</scan:XStart>"
+  "<scan:YStart>0</scan:YStart>"
+  "<scan:Width>2480</scan:Width>"
+  "<scan:Height>3508</scan:Height>"
+  "<scan:Format>Pdf</scan:Format>"
+  "<scan:CompressionQFactor>15</scan:CompressionQFactor>"
+  "<scan:ColorSpace>%s</scan:ColorSpace>" // Can be "Gray" or "Color"
+  "<scan:BitDepth>8</scan:BitDepth>"
+  "<scan:InputSource>Platen</scan:InputSource>"
+  "<scan:GrayRendering>NTSC</scan:GrayRendering>"
+  "<scan:ToneMap>"
+  "<scan:Gamma>0</scan:Gamma>"
+  "<scan:Brightness>1000</scan:Brightness>" // 200 - 1000 - 1800
+  "<scan:Contrast>1000</scan:Contrast>"     // 200 - 1000 - 1800
+  "<scan:Highlite>0</scan:Highlite>"
+  "<scan:Shadow>0</scan:Shadow>"
+  "</scan:ToneMap>"
+  "<scan:ContentType>Document</scan:ContentType>"
+  "</scan:ScanJob>";
 
 // ===========================================================================
 
@@ -98,7 +98,7 @@ NSString *GetBinaryURL(NSString *printer, NSString *jobUrl) {
 
 // ===========================================================================
 
-void StartScan(NSString *printer) {
+void StartScan(NSString *printer, const char *colorSpace) {
     NSMutableURLRequest *request;
     
     request = [NSMutableURLRequest requestWithURL:
@@ -106,12 +106,15 @@ void StartScan(NSString *printer) {
                 [NSString stringWithFormat:@"http://%@/Scan/Jobs", printer]]];
     
     [request setHTTPMethod:@"POST"];
-    [request setHTTPBody:[post_xml dataUsingEncoding:NSUTF8StringEncoding]];
+
+    [request setHTTPBody:[[NSString stringWithFormat:post_xml, colorSpace]
+                          dataUsingEncoding:NSUTF8StringEncoding]];
     
     NSError *error = nil;
     [NSURLConnection sendSynchronousRequest:request 
                           returningResponse:nil 
                                       error:&error];
+    
     if (error)
         NSLog(@"%@", error);
 }
@@ -139,18 +142,25 @@ void GetPage(NSString *printer, NSString *pageUrl, NSString *filename) {
 // ===========================================================================
 
 int main (int argc, const char * argv[]) {
-    
-    if (argc != 3) {
-        printf("Usage: %s <printer-hostname> <filename>\n", argv[0]);
+    int idxOffset = 0;
+  
+    if ((argc < 3 && argc > 4) || 
+        (argc == 4 && strcmp("--color", argv[1]))) {
+        printf("Usage: %s [--color] <printer-hostname> <filename>\n", argv[1]);
         return 1;
     }
     
+    BOOL withColor = !strcmp("--color", argv[1]) ? YES : NO;
+  
+    if (withColor)
+      idxOffset++;
+  
     NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
     
-    NSString *hostname = [NSString stringWithFormat:@"%s", argv[1]];
-    NSString *filename = [NSString stringWithFormat:@"%s", argv[2]];
-    
-    StartScan(hostname);
+    NSString *hostname = [NSString stringWithFormat:@"%s", argv[1+idxOffset]];
+    NSString *filename = [NSString stringWithFormat:@"%s", argv[2+idxOffset]];
+
+    StartScan(hostname, withColor ? "Color" : "Gray");
     
     NSArray *jobs = GetJobList(hostname);   
     
